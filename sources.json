@@ -1,0 +1,52 @@
+{
+  "sources": [
+    {
+      "id": "informburo_kz",
+      "name": "Informburo.kz",
+      "url": "https://informburo.kz/rss",
+      "language": "kk",
+      "category": "general",
+      "enabled": true
+    },
+    {
+      "id": "tengrinews_kz",
+      "name": "TengriNews",
+      "url": "https://tengrinews.kz/newsrss/",
+      "language": "kk",
+      "category": "general",
+      "enabled": true
+    },
+    {
+      "id": "kun_uz",
+      "name": "Kun.uz",
+      "url": "https://kun.uz/news/rss",
+      "language": "uz",
+      "category": "general",
+      "enabled": true
+    },
+    {
+      "id": "gazeta_uz",
+      "name": "Gazeta.uz",
+      "url": "https://www.gazeta.uz/rss/",
+      "language": "uz",
+      "category": "general",
+      "enabled": true
+    },
+    {
+      "id": "kloop_kg",
+      "name": "Kloop",
+      "url": "https://kloop.kg/blog/feed/",
+      "language": "ky",
+      "category": "general",
+      "enabled": true
+    },
+    {
+      "id": "kabar_kg",
+      "name": "Kabar",
+      "url": "https://kabar.kg/rss",
+      "language": "ky",
+      "category": "general",
+      "enabled": true
+    }
+  ]
+}

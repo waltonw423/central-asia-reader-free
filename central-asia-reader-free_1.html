@@ -1,0 +1,733 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Центральная Азия — Читалка</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;1,400&family=IBM+Plex+Sans:wght@300;400;500&family=IBM+Plex+Mono:wght@400&display=swap" rel="stylesheet" />
+<style>
+  :root {
+    --bg: #F5F2EB;
+    --bg2: #EDE9DF;
+    --bg3: #E4DFD2;
+    --ink: #1A1611;
+    --ink2: #4A4438;
+    --ink3: #7A7060;
+    --accent: #8B3A1A;
+    --accent2: #C45E2A;
+    --border: rgba(26,22,17,0.12);
+    --border2: rgba(26,22,17,0.22);
+    --gold: #B8860B;
+    --success: #2D6A4F;
+    --card-bg: #FAF7F2;
+    --serif: 'Playfair Display', Georgia, serif;
+    --sans: 'IBM Plex Sans', system-ui, sans-serif;
+    --mono: 'IBM Plex Mono', monospace;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: var(--sans);
+    background: var(--bg);
+    color: var(--ink);
+    min-height: 100vh;
+    font-size: 15px;
+    line-height: 1.6;
+  }
+
+  .masthead {
+    border-bottom: 2px solid var(--ink);
+    padding: 0 2rem;
+    position: sticky; top: 0; z-index: 100;
+    background: var(--bg);
+  }
+  .masthead-inner {
+    max-width: 1400px; margin: 0 auto;
+    display: flex; align-items: stretch; justify-content: space-between;
+    gap: 1rem;
+  }
+  .masthead-title {
+    font-family: var(--serif);
+    font-size: clamp(18px, 2.5vw, 26px);
+    font-weight: 600;
+    letter-spacing: -0.02em;
+    padding: 0.75rem 0;
+    color: var(--ink);
+    white-space: nowrap;
+  }
+  .masthead-title span { color: var(--accent); font-style: italic; }
+  .masthead-controls {
+    display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap;
+    padding: 0.5rem 0;
+  }
+  .masthead-controls select,
+  .masthead-controls input[type="text"] {
+    font-family: var(--sans);
+    font-size: 13px;
+    background: transparent;
+    border: 1px solid var(--border2);
+    border-radius: 2px;
+    padding: 5px 10px;
+    color: var(--ink);
+    outline: none;
+    height: 32px;
+  }
+  .masthead-controls select:focus,
+  .masthead-controls input:focus { border-color: var(--accent); }
+  .masthead-controls input[type="text"] { width: 180px; }
+  .btn {
+    font-family: var(--sans); font-size: 13px; font-weight: 500;
+    padding: 5px 14px; height: 32px;
+    border: 1px solid var(--border2); border-radius: 2px;
+    background: transparent; color: var(--ink2);
+    cursor: pointer; white-space: nowrap;
+    transition: background 0.15s, color 0.15s;
+  }
+  .btn:hover { background: var(--bg3); }
+  .btn.accent { background: var(--accent); color: #FAF7F2; border-color: var(--accent); }
+  .btn.accent:hover { background: var(--accent2); border-color: var(--accent2); }
+  .btn.active { background: var(--ink); color: var(--bg); border-color: var(--ink); }
+
+  .layout {
+    max-width: 1400px; margin: 0 auto;
+    display: grid;
+    grid-template-columns: 220px 1fr 280px;
+    gap: 0;
+    min-height: calc(100vh - 57px);
+  }
+
+  .sidebar {
+    border-right: 1px solid var(--border);
+    padding: 1.5rem 1rem;
+    position: sticky; top: 57px;
+    height: calc(100vh - 57px);
+    overflow-y: auto;
+  }
+  .sidebar-section { margin-bottom: 1.75rem; }
+  .sidebar-heading {
+    font-family: var(--mono);
+    font-size: 10px; text-transform: uppercase; letter-spacing: 0.12em;
+    color: var(--ink3); margin-bottom: 0.6rem;
+    padding-bottom: 0.4rem;
+    border-bottom: 1px solid var(--border);
+  }
+  .source-item {
+    display: flex; align-items: flex-start; gap: 8px;
+    padding: 5px 4px; border-radius: 2px;
+    cursor: pointer; transition: background 0.1s;
+    font-size: 13px; color: var(--ink2);
+  }
+  .source-item:hover { background: var(--bg2); }
+  .source-item input[type="checkbox"] { margin-top: 2px; accent-color: var(--accent); flex-shrink: 0; }
+  .source-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; margin-top: 5px; }
+  .source-label { line-height: 1.3; }
+  .source-country { font-size: 11px; color: var(--ink3); }
+
+  .tag-filter { display: flex; flex-wrap: wrap; gap: 5px; }
+  .tag {
+    font-size: 11px; padding: 3px 8px; border-radius: 99px;
+    border: 1px solid var(--border2); background: transparent;
+    cursor: pointer; color: var(--ink3); transition: all 0.12s;
+  }
+  .tag:hover, .tag.active { background: var(--accent); color: #FAF7F2; border-color: var(--accent); }
+
+  .feed { padding: 1.5rem 1.5rem; border-right: 1px solid var(--border); }
+  .feed-status {
+    font-size: 13px; color: var(--ink3);
+    margin-bottom: 1rem;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .spinner {
+    width: 14px; height: 14px; border: 2px solid var(--border2);
+    border-top-color: var(--accent); border-radius: 50%;
+    animation: spin 0.7s linear infinite; display: inline-block;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  .article-card {
+    border-bottom: 1px solid var(--border);
+    padding: 1.1rem 0;
+    display: grid; gap: 6px;
+  }
+  .article-card:first-child { padding-top: 0; }
+  .article-meta { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+  .article-source {
+    font-family: var(--mono); font-size: 11px;
+    text-transform: uppercase; letter-spacing: 0.08em;
+    color: var(--accent);
+  }
+  .article-date { font-size: 11px; color: var(--ink3); }
+  .article-tag-pill {
+    font-size: 10px; padding: 1px 6px; border-radius: 99px;
+    border: 1px solid var(--border2); color: var(--ink3);
+    text-transform: uppercase; letter-spacing: 0.06em;
+  }
+  .article-title {
+    font-family: var(--serif);
+    font-size: 17px; font-weight: 600; line-height: 1.35;
+    color: var(--ink);
+  }
+  .article-title a { color: inherit; text-decoration: none; }
+  .article-title a:hover { color: var(--accent); }
+  .article-desc {
+    font-size: 13px; color: var(--ink2); line-height: 1.55;
+    display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+  .article-actions { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 2px; }
+  .article-btn {
+    font-family: var(--sans); font-size: 12px;
+    padding: 3px 10px; border-radius: 2px;
+    border: 1px solid var(--border2); background: transparent;
+    color: var(--ink3); cursor: pointer; transition: all 0.12s;
+  }
+  .article-btn:hover { background: var(--bg2); color: var(--ink); }
+  .article-btn.saved { color: var(--success); border-color: var(--success); }
+  .article-btn.ai-btn { color: var(--accent2); border-color: rgba(139,58,26,0.35); }
+  .article-btn.ai-btn:hover { background: rgba(139,58,26,0.06); }
+  .article-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+
+  .ai-output {
+    background: var(--bg2); border-left: 3px solid var(--accent);
+    padding: 10px 14px; font-size: 13px; color: var(--ink2);
+    line-height: 1.6; border-radius: 0 2px 2px 0;
+    margin-top: 4px; white-space: pre-wrap;
+  }
+  .ai-output .ai-label {
+    font-family: var(--mono); font-size: 10px; text-transform: uppercase;
+    letter-spacing: 0.1em; color: var(--accent); margin-bottom: 6px; display: block;
+  }
+
+  .panel { padding: 1.5rem 1rem; position: sticky; top: 57px; height: calc(100vh - 57px); overflow-y: auto; }
+  .panel-section { margin-bottom: 1.75rem; }
+  .panel-heading {
+    font-family: var(--mono); font-size: 10px; text-transform: uppercase;
+    letter-spacing: 0.12em; color: var(--ink3); margin-bottom: 0.75rem;
+    padding-bottom: 0.4rem; border-bottom: 1px solid var(--border);
+  }
+
+  /* Ollama status */
+  .ollama-box { display: flex; flex-direction: column; gap: 8px; }
+  .ollama-row { display: flex; align-items: center; gap: 8px; }
+  .ollama-box input, .ollama-box select {
+    font-family: var(--mono); font-size: 12px;
+    padding: 6px 10px; border: 1px solid var(--border2);
+    border-radius: 2px; background: var(--card-bg);
+    color: var(--ink); outline: none; width: 100%;
+  }
+  .ollama-box input:focus, .ollama-box select:focus { border-color: var(--accent); }
+  .status-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--border2); flex-shrink: 0; }
+  .status-dot.ok { background: var(--success); }
+  .status-dot.err { background: #C0392B; }
+  .status-text { font-size: 12px; color: var(--ink3); }
+  .status-text.ok { color: var(--success); }
+  .status-text.err { color: #C0392B; }
+
+  /* Setup guide */
+  .setup-guide {
+    background: var(--bg2); border: 1px solid var(--border);
+    border-radius: 2px; padding: 10px 12px;
+    font-size: 12px; color: var(--ink2); line-height: 1.6;
+  }
+  .setup-guide code {
+    font-family: var(--mono); font-size: 11px;
+    background: var(--bg3); padding: 1px 5px; border-radius: 2px;
+    color: var(--accent);
+  }
+  .setup-guide p { margin-bottom: 6px; }
+  .setup-guide p:last-child { margin-bottom: 0; }
+
+  /* Reading list */
+  .reading-item { padding: 7px 0; border-bottom: 1px solid var(--border); display: grid; gap: 3px; }
+  .reading-item:last-child { border-bottom: none; }
+  .reading-item-title { font-family: var(--serif); font-size: 13px; line-height: 1.3; }
+  .reading-item-title a { color: var(--ink); text-decoration: none; }
+  .reading-item-title a:hover { color: var(--accent); }
+  .reading-item-meta { font-size: 11px; color: var(--ink3); display: flex; gap: 6px; align-items: center; }
+  .reading-remove { font-size: 11px; color: var(--ink3); background: none; border: none; cursor: pointer; padding: 0; text-decoration: underline; }
+  .reading-remove:hover { color: var(--accent); }
+  .empty-state { font-size: 13px; color: var(--ink3); font-style: italic; }
+
+  /* Modal */
+  .modal-overlay {
+    position: fixed; inset: 0; background: rgba(26,22,17,0.5);
+    z-index: 200; display: none; align-items: center; justify-content: center;
+  }
+  .modal-overlay.open { display: flex; }
+  .modal {
+    background: var(--bg); border: 1px solid var(--border2);
+    border-radius: 4px; padding: 2rem;
+    width: 90%; max-width: 540px; max-height: 80vh; overflow-y: auto;
+  }
+  .modal h2 { font-family: var(--serif); font-size: 20px; margin-bottom: 1.25rem; }
+  .modal label { font-size: 13px; color: var(--ink2); display: block; margin-bottom: 4px; font-weight: 500; }
+  .modal input, .modal select {
+    font-family: var(--sans); font-size: 13px;
+    width: 100%; padding: 7px 10px; border: 1px solid var(--border2);
+    border-radius: 2px; background: var(--card-bg); color: var(--ink);
+    outline: none; margin-bottom: 1rem;
+  }
+  .modal input:focus, .modal select:focus { border-color: var(--accent); }
+  .modal-footer { display: flex; gap: 8px; justify-content: flex-end; margin-top: 0.5rem; }
+  .custom-source-list { margin-bottom: 1rem; }
+  .custom-source-row {
+    display: flex; gap: 6px; align-items: center;
+    padding: 5px 0; border-bottom: 1px solid var(--border); font-size: 13px;
+  }
+  .custom-source-row span { flex: 1; }
+
+  @media (max-width: 900px) {
+    .layout { grid-template-columns: 1fr; }
+    .sidebar, .panel { position: static; height: auto; border-right: none; border-bottom: 1px solid var(--border); }
+    .sidebar { display: none; }
+  }
+  @media (max-width: 600px) {
+    .masthead { padding: 0 1rem; }
+    .feed { padding: 1rem; }
+  }
+</style>
+</head>
+<body>
+
+<header class="masthead">
+  <div class="masthead-inner">
+    <div class="masthead-title">Центральная Азия <span>/ Читалка</span></div>
+    <div class="masthead-controls">
+      <input type="text" id="search-input" placeholder="Поиск..." oninput="applyFilters()" />
+      <select id="country-filter" onchange="applyFilters()">
+        <option value="">Все страны</option>
+        <option value="kz">Казахстан</option>
+        <option value="uz">Узбекистан</option>
+        <option value="kg">Кыргызстан</option>
+        <option value="tj">Таджикистан</option>
+        <option value="tm">Туркменистан</option>
+        <option value="multi">Регионально</option>
+      </select>
+      <select id="type-filter" onchange="applyFilters()">
+        <option value="">Все типы</option>
+        <option value="news">Новости</option>
+        <option value="opinion">Аналитика</option>
+        <option value="academic">Академическое</option>
+      </select>
+      <button class="btn" id="saved-toggle" onclick="toggleSavedView()">Сохранённое</button>
+      <button class="btn" onclick="openSettings()">⚙ Настройки</button>
+      <button class="btn accent" onclick="refreshAllFeeds()">↻ Обновить</button>
+    </div>
+  </div>
+</header>
+
+<div class="layout">
+  <aside class="sidebar">
+    <div class="sidebar-section">
+      <div class="sidebar-heading">Источники</div>
+      <div id="source-list"></div>
+    </div>
+    <div class="sidebar-section">
+      <div class="sidebar-heading">Темы</div>
+      <div class="tag-filter" id="tag-filter">
+        <span class="tag active" onclick="toggleTag(this,'')">Все</span>
+        <span class="tag" onclick="toggleTag(this,'политика')">Политика</span>
+        <span class="tag" onclick="toggleTag(this,'экономика')">Экономика</span>
+        <span class="tag" onclick="toggleTag(this,'права')">Права</span>
+        <span class="tag" onclick="toggleTag(this,'безопасность')">Безопасность</span>
+        <span class="tag" onclick="toggleTag(this,'энергетика')">Энергетика</span>
+        <span class="tag" onclick="toggleTag(this,'культура')">Культура</span>
+      </div>
+    </div>
+  </aside>
+
+  <main class="feed">
+    <div class="feed-status" id="feed-status">Нажмите «Обновить» для загрузки статей.</div>
+    <div id="article-list"></div>
+  </main>
+
+  <aside class="panel">
+    <!-- Ollama status -->
+    <div class="panel-section">
+      <div class="panel-heading">Локальный AI (Ollama)</div>
+      <div class="ollama-box">
+        <div class="ollama-row">
+          <div class="status-dot" id="ollama-dot"></div>
+          <div class="status-text" id="ollama-status">Проверка...</div>
+        </div>
+        <label style="font-size:12px;color:var(--ink3);margin:0">Модель</label>
+        <select id="model-select" onchange="savePrefs()">
+          <option value="mistral">mistral (рекомендуется)</option>
+          <option value="llama3">llama3</option>
+          <option value="llama3.2">llama3.2</option>
+          <option value="gemma3">gemma3</option>
+          <option value="qwen2.5">qwen2.5</option>
+          <option value="phi3">phi3 (быстрый, лёгкий)</option>
+        </select>
+        <button class="btn" onclick="checkOllama()" style="font-size:12px;height:28px">Проверить соединение</button>
+
+        <div id="setup-guide" class="setup-guide" style="display:none">
+          <p><strong>Как запустить Ollama:</strong></p>
+          <p>1. Установите: <code>ollama.com/download</code></p>
+          <p>2. Загрузите модель:<br><code>ollama pull mistral</code></p>
+          <p>3. Запустите сервер:<br><code>OLLAMA_ORIGINS="*" ollama serve</code></p>
+          <p>4. Откройте этот файл локально (не через http-сервер).</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Reading list -->
+    <div class="panel-section">
+      <div class="panel-heading">Список чтения (<span id="rl-count">0</span>)</div>
+      <div id="reading-list-panel"><div class="empty-state">Пока пусто.</div></div>
+    </div>
+  </aside>
+</div>
+
+<!-- Settings modal -->
+<div class="modal-overlay" id="settings-modal" onclick="closeSettingsOutside(event)">
+  <div class="modal">
+    <h2>Настройки</h2>
+    <label>CORS-прокси URL</label>
+    <input type="text" id="proxy-url" value="https://api.allorigins.win/raw?url=" />
+    <label>URL Ollama (по умолчанию: localhost)</label>
+    <input type="text" id="ollama-url" value="http://localhost:11434" />
+    <label>Свои RSS-источники</label>
+    <div class="custom-source-list" id="custom-source-list"></div>
+    <label>Название</label>
+    <input type="text" id="new-source-name" placeholder="Название источника" />
+    <label>RSS URL</label>
+    <input type="text" id="new-source-url" placeholder="https://example.com/rss" />
+    <label>Страна</label>
+    <select id="new-source-country">
+      <option value="multi">Регионально</option>
+      <option value="kz">Казахстан</option>
+      <option value="uz">Узбекистан</option>
+      <option value="kg">Кыргызстан</option>
+      <option value="tj">Таджикистан</option>
+      <option value="tm">Туркменистан</option>
+    </select>
+    <label>Тип</label>
+    <select id="new-source-type">
+      <option value="news">Новости</option>
+      <option value="opinion">Аналитика</option>
+      <option value="academic">Академическое</option>
+    </select>
+    <div class="modal-footer">
+      <button class="btn" onclick="addCustomSource()">+ Добавить источник</button>
+      <button class="btn accent" onclick="closeSettings()">Сохранить и закрыть</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const COUNTRY_COLORS = { kz:'#534AB7', uz:'#1D9E75', kg:'#BA7517', tj:'#D85A30', tm:'#639922', multi:'#888780' };
+const COUNTRY_NAMES = { kz:'Казахстан', uz:'Узбекистан', kg:'Кыргызстан', tj:'Таджикистан', tm:'Туркменистан', multi:'Регионально' };
+
+const BUILT_IN_SOURCES = [
+  { id:'fergana',    name:'Fergana News',      url:'https://fergana.news/feed/',             country:'multi', type:'news' },
+  { id:'cabar',      name:'CABAR.asia',         url:'https://cabar.asia/ru/feed/',            country:'multi', type:'opinion' },
+  { id:'kloop',      name:'Kloop',              url:'https://kloop.kg/feed/',                 country:'kg',    type:'news' },
+  { id:'azattyk',    name:'Radio Azattyk',      url:'https://rus.azattyk.org/api/zpfbqtipiq', country:'kg',    type:'news' },
+  { id:'vlast',      name:'Vlast.kz',           url:'https://vlast.kz/rss/',                  country:'kz',    type:'opinion' },
+  { id:'kursiv',     name:'Kursiv',             url:'https://kursiv.kz/rss/',                 country:'kz',    type:'news' },
+  { id:'kun',        name:'Kun.uz',             url:'https://kun.uz/rss',                     country:'uz',    type:'news' },
+  { id:'asiaplus',   name:'Asia-Plus',          url:'https://asiaplustj.info/ru/rss.xml',     country:'tj',    type:'news' },
+  { id:'gundogar',   name:'Gündogar',           url:'https://gundogar.org/feed/',             country:'tm',    type:'news' },
+  { id:'chronikatm', name:'Chronicles of TM',   url:'https://hronikatm.com/feed/',            country:'tm',    type:'news' },
+];
+
+let articles = [];
+let enabledSources = new Set(BUILT_IN_SOURCES.map(s=>s.id));
+let customSources = [];
+let readingList = [];
+let activeTag = '';
+let showingSaved = false;
+let ollamaOk = false;
+let ollamaBaseUrl = 'http://localhost:11434';
+
+// ── Persist ──────────────────────────────────────────────────────
+function load() {
+  try {
+    const rl = localStorage.getItem('ca_reading_list'); if (rl) readingList = JSON.parse(rl);
+    const en = localStorage.getItem('ca_enabled_sources'); if (en) enabledSources = new Set(JSON.parse(en));
+    const cs = localStorage.getItem('ca_custom_sources'); if (cs) customSources = JSON.parse(cs);
+    const ou = localStorage.getItem('ca_ollama_url');
+    if (ou) { ollamaBaseUrl = ou; document.getElementById('ollama-url').value = ou; }
+    const pu = localStorage.getItem('ca_proxy_url');
+    if (pu) document.getElementById('proxy-url').value = pu;
+    const ms = localStorage.getItem('ca_model');
+    if (ms) document.getElementById('model-select').value = ms;
+  } catch(e) {}
+}
+function savePrefs() {
+  localStorage.setItem('ca_reading_list', JSON.stringify(readingList));
+  localStorage.setItem('ca_enabled_sources', JSON.stringify([...enabledSources]));
+  localStorage.setItem('ca_custom_sources', JSON.stringify(customSources));
+  localStorage.setItem('ca_model', document.getElementById('model-select').value);
+}
+
+function allSources() { return [...BUILT_IN_SOURCES, ...customSources]; }
+
+// ── Ollama ────────────────────────────────────────────────────────
+async function checkOllama() {
+  const dot = document.getElementById('ollama-dot');
+  const status = document.getElementById('ollama-status');
+  const guide = document.getElementById('setup-guide');
+  dot.className = 'status-dot';
+  status.textContent = 'Проверка...'; status.className = 'status-text';
+  try {
+    const res = await fetch(ollamaBaseUrl + '/api/tags', { signal: AbortSignal.timeout(3000) });
+    if (!res.ok) throw new Error();
+    const data = await res.json();
+    const models = (data.models || []).map(m => m.name.split(':')[0]);
+    ollamaOk = true;
+    dot.className = 'status-dot ok';
+    status.textContent = models.length ? `Готово · ${models.slice(0,3).join(', ')}` : 'Запущен (модели не найдены)';
+    status.className = 'status-text ok';
+    guide.style.display = 'none';
+    // Populate available models if detected
+    if (models.length) {
+      const sel = document.getElementById('model-select');
+      const currentVal = sel.value;
+      sel.innerHTML = models.map(m => `<option value="${m}" ${m===currentVal?'selected':''}>${m}</option>`).join('');
+    }
+  } catch(e) {
+    ollamaOk = false;
+    dot.className = 'status-dot err';
+    status.textContent = 'Ollama не запущен';
+    status.className = 'status-text err';
+    guide.style.display = 'block';
+  }
+}
+
+async function callOllama(prompt) {
+  const model = document.getElementById('model-select').value || 'mistral';
+  const res = await fetch(ollamaBaseUrl + '/api/generate', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ model, prompt, stream: false }),
+    signal: AbortSignal.timeout(60000)
+  });
+  if (!res.ok) throw new Error('Ollama error: ' + res.status);
+  const data = await res.json();
+  return data.response || '';
+}
+
+// ── Sidebar ───────────────────────────────────────────────────────
+function renderSidebar() {
+  const list = document.getElementById('source-list');
+  list.innerHTML = allSources().map(s => `
+    <label class="source-item">
+      <input type="checkbox" ${enabledSources.has(s.id)?'checked':''} onchange="toggleSource('${s.id}',this.checked)" />
+      <span class="source-dot" style="background:${COUNTRY_COLORS[s.country]||'#888'}"></span>
+      <span class="source-label">${s.name}<br/><span class="source-country">${COUNTRY_NAMES[s.country]||s.country}</span></span>
+    </label>`).join('');
+}
+function toggleSource(id, checked) {
+  checked ? enabledSources.add(id) : enabledSources.delete(id);
+  savePrefs(); applyFilters();
+}
+function toggleTag(el, tag) {
+  document.querySelectorAll('.tag').forEach(t=>t.classList.remove('active'));
+  el.classList.add('active'); activeTag = tag; applyFilters();
+}
+
+// ── RSS ───────────────────────────────────────────────────────────
+function stripHtml(html) { const d = document.createElement('div'); d.innerHTML = html; return d.textContent||d.innerText||''; }
+function formatDate(d) { if(!d||isNaN(d)) return ''; return d.toLocaleDateString('ru-RU',{day:'numeric',month:'short',year:'numeric'}); }
+
+async function fetchFeed(source) {
+  const proxy = document.getElementById('proxy-url').value.trim() || 'https://api.allorigins.win/raw?url=';
+  const url = proxy + encodeURIComponent(source.url);
+  try {
+    const res = await fetch(url, { signal: AbortSignal.timeout(12000) });
+    if (!res.ok) throw new Error('HTTP '+res.status);
+    const text = await res.text();
+    const doc = new DOMParser().parseFromString(text, 'text/xml');
+    return [...doc.querySelectorAll('item, entry')].slice(0,20).map(item => {
+      const get = sel => { const el = item.querySelector(sel); return el ? el.textContent.trim() : ''; };
+      const link = get('link') || item.querySelector('link')?.getAttribute('href') || '';
+      const pub = get('pubDate')||get('published')||get('updated')||get('dc\\:date')||'';
+      const desc = get('description')||get('summary')||get('content')||get('content\\:encoded')||'';
+      return {
+        id: (source.id+'_'+(link||get('title'))).replace(/\W/g,'').slice(0,60),
+        title: get('title'), link,
+        desc: stripHtml(desc).slice(0,300),
+        date: new Date(pub),
+        sourceName: source.name, sourceId: source.id,
+        country: source.country, type: source.type,
+      };
+    }).filter(a=>a.title&&a.link);
+  } catch(e) { console.warn('Feed error',source.name,e.message); return []; }
+}
+
+async function refreshAllFeeds() {
+  const btn = document.querySelector('.btn.accent');
+  btn.textContent = '↻ Загрузка...'; btn.disabled = true;
+  const status = document.getElementById('feed-status');
+  status.innerHTML = '<span class="spinner"></span> Загрузка источников...';
+  const activeSources = allSources().filter(s=>enabledSources.has(s.id));
+  const results = await Promise.allSettled(activeSources.map(s=>fetchFeed(s)));
+  let all = [];
+  results.forEach(r => { if(r.status==='fulfilled') all=all.concat(r.value); });
+  const seen = new Set();
+  articles = all.filter(a=>{ if(seen.has(a.id)) return false; seen.add(a.id); return true; });
+  articles.sort((a,b)=>b.date-a.date);
+  status.textContent = `Загружено ${articles.length} статей из ${activeSources.length} источников · ${new Date().toLocaleTimeString('ru-RU')}`;
+  btn.textContent = '↻ Обновить'; btn.disabled = false;
+  applyFilters();
+}
+
+// ── Filters ───────────────────────────────────────────────────────
+function applyFilters() {
+  const q = document.getElementById('search-input').value.toLowerCase();
+  const country = document.getElementById('country-filter').value;
+  const type = document.getElementById('type-filter').value;
+  let list = showingSaved ? articles.filter(a=>readingList.some(r=>r.id===a.id)) : articles;
+  if (country) list = list.filter(a=>a.country===country);
+  if (type) list = list.filter(a=>a.type===type);
+  if (q) list = list.filter(a=>a.title.toLowerCase().includes(q)||a.desc.toLowerCase().includes(q)||a.sourceName.toLowerCase().includes(q));
+  renderFeed(list);
+}
+
+// ── Render ────────────────────────────────────────────────────────
+function renderFeed(list) {
+  const container = document.getElementById('article-list');
+  if (!list.length) { container.innerHTML = '<div class="empty-state" style="padding:2rem 0">Статей не найдено.</div>'; return; }
+  container.innerHTML = list.map(a => {
+    const saved = readingList.some(r=>r.id===a.id);
+    const dot = `<span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:${COUNTRY_COLORS[a.country]||'#888'};margin-right:4px;vertical-align:middle"></span>`;
+    const typePill = a.type==='opinion'?'аналитика':a.type==='academic'?'академическое':'';
+    return `<article class="article-card" id="art_${a.id}">
+      <div class="article-meta">
+        <span class="article-source">${dot}${a.sourceName}</span>
+        <span class="article-date">${formatDate(a.date)}</span>
+        ${typePill?`<span class="article-tag-pill">${typePill}</span>`:''}
+      </div>
+      <div class="article-title"><a href="${a.link}" target="_blank" rel="noopener">${a.title}</a></div>
+      ${a.desc?`<div class="article-desc">${a.desc}</div>`:''}
+      <div class="article-actions">
+        <button class="article-btn ${saved?'saved':''}" onclick="toggleSave('${a.id}')">${saved?'✓ Сохранено':'+ Сохранить'}</button>
+        <button class="article-btn ai-btn" onclick="doAI('${a.id}','summary')">Пересказ</button>
+        <button class="article-btn ai-btn" onclick="doAI('${a.id}','translate')">→ English</button>
+        <button class="article-btn ai-btn" onclick="doAI('${a.id}','context')">Контекст</button>
+      </div>
+      <div class="ai-output" id="ai_${a.id}" style="display:none"></div>
+    </article>`;
+  }).join('');
+}
+
+// ── Reading list ──────────────────────────────────────────────────
+function toggleSave(id) {
+  const art = articles.find(a=>a.id===id); if (!art) return;
+  const idx = readingList.findIndex(r=>r.id===id);
+  if (idx>=0) readingList.splice(idx,1);
+  else readingList.unshift({id:art.id,title:art.title,link:art.link,sourceName:art.sourceName,date:art.date});
+  savePrefs(); renderReadingList(); applyFilters();
+}
+function toggleSavedView() {
+  showingSaved = !showingSaved;
+  document.getElementById('saved-toggle').classList.toggle('active', showingSaved);
+  applyFilters();
+}
+function renderReadingList() {
+  document.getElementById('rl-count').textContent = readingList.length;
+  const panel = document.getElementById('reading-list-panel');
+  if (!readingList.length) { panel.innerHTML = '<div class="empty-state">Пока пусто.</div>'; return; }
+  panel.innerHTML = readingList.map(r=>`
+    <div class="reading-item">
+      <div class="reading-item-title"><a href="${r.link}" target="_blank" rel="noopener">${r.title}</a></div>
+      <div class="reading-item-meta">
+        <span>${r.sourceName}</span>
+        <button class="reading-remove" onclick="removeFromList('${r.id}')">удалить</button>
+      </div>
+    </div>`).join('');
+}
+function removeFromList(id) {
+  readingList = readingList.filter(r=>r.id!==id);
+  savePrefs(); renderReadingList(); applyFilters();
+}
+
+// ── AI features ───────────────────────────────────────────────────
+function showAiBox(id, label, text) {
+  const box = document.getElementById('ai_'+id); if (!box) return;
+  box.style.display = 'block';
+  box.innerHTML = `<span class="ai-label">${label}</span>${text}`;
+}
+
+async function doAI(id, mode) {
+  if (!ollamaOk) {
+    showAiBox(id, 'Ошибка', 'Ollama не запущен. Следуйте инструкции в правой панели.');
+    return;
+  }
+  const art = articles.find(a=>a.id===id); if (!art) return;
+  const country = COUNTRY_NAMES[art.country]||art.country;
+
+  const prompts = {
+    summary: `Кратко перескажи по-русски (3–5 предложений) суть этой новостной статьи из источника ${art.sourceName} (${country}). Заголовок: «${art.title}». Описание: ${art.desc}. Отвечай только на русском языке.`,
+    translate: `Translate this Russian-language news article headline and summary into clear, natural English. Source: ${art.sourceName}. Headline: "${art.title}". Summary: ${art.desc}. Provide: 1) English headline, 2) English summary paragraph. Be concise.`,
+    context: `You are an expert on Central Asian politics and society. A reader is looking at this article from ${art.sourceName} (${country}): "${art.title}". In 4–6 sentences, give the broader political/historical context that helps understand why this story matters. Include relevant background on ${country} and the wider region. Be concise and analytical. Respond in English.`
+  };
+  const labels = { summary:'Краткий пересказ', translate:'Translation', context:'Context' };
+
+  showAiBox(id, labels[mode], '<span class="spinner"></span> Обработка...');
+
+  // Disable buttons while processing
+  const card = document.getElementById('art_'+id);
+  const btns = card.querySelectorAll('.ai-btn');
+  btns.forEach(b=>b.disabled=true);
+
+  try {
+    const result = await callOllama(prompts[mode]);
+    showAiBox(id, labels[mode], result);
+  } catch(e) {
+    showAiBox(id, 'Ошибка', e.message);
+  } finally {
+    btns.forEach(b=>b.disabled=false);
+  }
+}
+
+// ── Settings ──────────────────────────────────────────────────────
+function openSettings() { renderCustomSourceList(); document.getElementById('settings-modal').classList.add('open'); }
+function closeSettings() {
+  ollamaBaseUrl = document.getElementById('ollama-url').value.trim() || 'http://localhost:11434';
+  localStorage.setItem('ca_ollama_url', ollamaBaseUrl);
+  localStorage.setItem('ca_proxy_url', document.getElementById('proxy-url').value.trim());
+  document.getElementById('settings-modal').classList.remove('open');
+  checkOllama();
+}
+function closeSettingsOutside(e) { if(e.target===document.getElementById('settings-modal')) closeSettings(); }
+
+function renderCustomSourceList() {
+  const list = document.getElementById('custom-source-list');
+  if (!customSources.length) { list.innerHTML = '<div class="empty-state" style="font-size:12px;margin-bottom:8px">Нет добавленных источников.</div>'; return; }
+  list.innerHTML = customSources.map(s=>`
+    <div class="custom-source-row">
+      <span>${s.name} <span style="color:var(--ink3);font-size:11px">(${s.url.slice(0,40)}...)</span></span>
+      <button class="btn" style="font-size:11px;padding:2px 8px" onclick="deleteCustomSource('${s.id}')">✕</button>
+    </div>`).join('');
+}
+function addCustomSource() {
+  const name = document.getElementById('new-source-name').value.trim();
+  const url = document.getElementById('new-source-url').value.trim();
+  const country = document.getElementById('new-source-country').value;
+  const type = document.getElementById('new-source-type').value;
+  if (!name||!url) { alert('Введите название и URL.'); return; }
+  const id = 'custom_'+Date.now();
+  customSources.push({id,name,url,country,type});
+  enabledSources.add(id);
+  savePrefs(); renderCustomSourceList(); renderSidebar();
+}
+function deleteCustomSource(id) {
+  customSources = customSources.filter(s=>s.id!==id);
+  enabledSources.delete(id);
+  savePrefs(); renderCustomSourceList(); renderSidebar();
+}
+
+// ── Init ──────────────────────────────────────────────────────────
+load();
+renderSidebar();
+renderReadingList();
+checkOllama();
+</script>
+</body>
+</html>
